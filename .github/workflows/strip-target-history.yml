@@ -23,15 +23,16 @@ jobs:
         run: |
           git filter-repo --path backend/target --invert-paths --force
           echo "History rewritten. Commit count: $(git log --oneline | wc -l)"
-          echo "backend/target still present: $(git ls-files backend/target | wc -l) files (expect 0)"
+          echo "backend/target files remaining: $(git ls-files backend/target | wc -l) (expect 0)"
 
       - name: Verify backend source code is intact
         run: |
           test -d backend || (echo "ERROR: backend/ directory missing!" && exit 1)
-          echo "backend/ files present: $(git ls-files backend | wc -l)"
+          echo "backend/ source files: $(git ls-files backend | wc -l)"
 
-      - name: Force-push cleaned main
+      - name: Force-push cleaned history
+        # git filter-repo removes the origin remote; add it back before pushing
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin HEAD:main --force
-          echo "Done. backend/target has been removed from all $(git log --oneline | wc -l) commits."
+          echo "Done — all $(git log --oneline | wc -l) commits preserved, backend/target gone."
