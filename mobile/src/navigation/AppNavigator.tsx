@@ -26,6 +26,7 @@ import {
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { createBottomTabNavigator, BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 
+import { MiniPlayer } from "../components/MiniPlayer";
 import { DashboardScreen } from "../screens/DashboardScreen";
 import { ThemeSettingsScreen } from "../screens/ThemeSettingsScreen";
 import { PortfolioUploadScreen } from "../screens/PortfolioUploadScreen";
@@ -70,21 +71,22 @@ function MainTabs() {
   const { colors } = useTheme();
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textTertiary,
-        tabBarStyle: {
-          borderTopColor: colors.border,
-          backgroundColor: colors.background,
-        },
-        tabBarLabelStyle: {
-          fontSize: FontSize.xs,
-          fontWeight: FontWeight.medium,
-        },
-      }}
-    >
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.textTertiary,
+          tabBarStyle: {
+            borderTopColor: colors.border,
+            backgroundColor: colors.background,
+          },
+          tabBarLabelStyle: {
+            fontSize: FontSize.xs,
+            fontWeight: FontWeight.medium,
+          },
+        }}
+      >
       <Tab.Screen
         name="Home"
         options={{
@@ -144,7 +146,9 @@ function MainTabs() {
       >
         {() => <ThemeSettingsScreen />}
       </Tab.Screen>
-    </Tab.Navigator>
+      </Tab.Navigator>
+      <MiniPlayer />
+    </View>
   );
 }
 
