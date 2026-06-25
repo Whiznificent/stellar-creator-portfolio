@@ -628,3 +628,23 @@ model BountyTemplate {
   @@index([category])
   @@index([createdByUserId])
 }
+
+// ── Stellar Analytics ──────────────────────────────────────────────────────
+
+/// Cross-border payment corridor analytics for Stellar PathPayment operations.
+/// Raw events are aggregated every 5 minutes into period buckets.
+model CorridorPayment {
+  id               String   @id @default(cuid())
+  sourceCurrency   String   // Asset code of send asset (e.g., "USD")
+  destCurrency     String   // Asset code of destination asset (e.g., "EUR")
+  volume           BigInt   // Total volume in stroops or token units
+  transactionCount Int      // Number of transactions in period
+  periodBucket     DateTime // Truncated to 5-minute intervals
+  createdAt        DateTime @default(now())
+
+  @@unique([sourceCurrency, destCurrency, periodBucket])
+  @@index([sourceCurrency])
+  @@index([destCurrency])
+  @@index([periodBucket])
+  @@index([sourceCurrency, destCurrency])
+}
