@@ -51,12 +51,16 @@ model User {
   role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
+  // Suspension/Ban tracking
+  suspendedAt   DateTime?
+  suspensionReason String?
+
   // Relations
   accounts      Account[]
   sessions      Session[]
   verificationTokens VerificationToken[]
-  
+
   // Platform specific relations
   creatorProfile CreatorProfile?
   clientProfile  ClientProfile?

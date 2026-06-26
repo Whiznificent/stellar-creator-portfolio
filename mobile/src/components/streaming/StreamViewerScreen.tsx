@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Accessible, AccessibilityRole } from 'react-native';
 import { RTCView } from 'react-native-webrtc';
 import { WebRTCStreamingService, StreamState } from '@/mobile/src/services/streaming.service';
+import { useStreamSubtitles } from '@/mobile/src/hooks/useStreamSubtitles';
 
 interface StreamViewerScreenProps {
   roomId: string;
@@ -28,6 +29,13 @@ export const StreamViewerScreen: React.FC<StreamViewerScreenProps> = ({
   const [state, setState] = useState<StreamState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [remoteStream, setRemoteStream] = useState<any>(null);
+  const {
+    ccEnabled,
+    currentSubtitle,
+    startSubtitles,
+    stopSubtitles,
+    setCCEnabled,
+  } = useStreamSubtitles('en');
 
   // Initialize viewer streaming
   useEffect(() => {
@@ -45,11 +53,12 @@ export const StreamViewerScreen: React.FC<StreamViewerScreenProps> = ({
         const session = await service.initializeViewer();
         setState(session.state);
 
-        // Listen for remote stream
+        // Listen for remote stream and start subtitles
         if (session.peerConnection) {
           session.peerConnection.ontrack = (event) => {
             setRemoteStream(event.streams[0]);
             setState('connected');
+            startSubtitles();
           };
         }
       } catch (err) {
@@ -64,6 +73,7 @@ export const StreamViewerScreen: React.FC<StreamViewerScreenProps> = ({
   // Leave stream
   const handleLeaveStream = async () => {
     try {
+      stopSubtitles();
       if (streamingService) {
         await streamingService.stopStreaming();
       }
@@ -138,6 +148,27 @@ export const StreamViewerScreen: React.FC<StreamViewerScreenProps> = ({
           </View>
         )}
       </View>
+
+      {/* Subtitles overlay - shown at bottom when enabled */}
+      {ccEnabled && currentSubtitle && (
+        <View style={styles.subtitleContainer}>
+          <Text style={styles.subtitleText} numberOfLines={2}>
+            {currentSubtitle.text}
+          </Text>
+        </View>
+      )}
+
+      {/* CC button - closed captions toggle */}
+      <TouchableOpacity
+        style={[styles.ccButton, ccEnabled && styles.ccButtonActive]}
+        onPress={() => setCCEnabled(!ccEnabled)}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={`Closed captions ${ccEnabled ? 'on' : 'off'}`}
+        accessibilityHint="Toggle subtitles display"
+      >
+        <Text style={styles.ccButtonText}>CC</Text>
+      </TouchableOpacity>
 
       {/* Action buttons */}
       <View style={styles.actionButtons}>
@@ -271,5 +302,44 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  subtitleContainer: {
+    position: 'absolute',
+    bottom: 100,
+    left: 12,
+    right: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: 8,
+    padding: 12,
+    zIndex: 15,
+  },
+  subtitleText: {
+    color: '#fff',
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+  ccButton: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1.5,
+    borderColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 11,
+  },
+  ccButtonActive: {
+    backgroundColor: 'rgba(0, 122, 255, 0.8)',
+    borderColor: '#007AFF',
+  },
+  ccButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
