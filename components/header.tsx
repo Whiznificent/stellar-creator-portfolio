@@ -7,6 +7,7 @@ import { Moon, Sun, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { DeferredSwapLauncher } from '@/components/streaming/deferred-swap-launcher';
+import { NotificationCenter } from '@/backend/services/notifications/notification-center';
 
 export function Header() {
   const { theme, setTheme } = useTheme();
@@ -82,6 +83,7 @@ export function Header() {
           {/* Right Actions */}
           <div className="flex items-center gap-2">
             <DeferredSwapLauncher />
+            <NotificationCenter />
             {mounted && (
               <Button
                 variant="ghost"

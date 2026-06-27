@@ -89,6 +89,25 @@ export interface SessionRecord {
   lastUsed: number;
 }
 
+// ─── Sealed Sender ────────────────────────────────────────────────────────────
+
+export interface SealedSenderMessage {
+  id: string;
+  envelope: Uint8Array;
+  signature: Uint8Array;
+  messageType: 1 | 3;
+  timestamp: number;
+}
+
+// ─── Delivery Receipts ───────────────────────────────────────────────────────
+
+export interface DeliveryReceipt {
+  messageId: string;
+  recipientId: string;
+  status: 'delivered' | 'read';
+  timestamp: number;
+}
+
 // ─── Upscaling ────────────────────────────────────────────────────────────────
 
 export interface UpscaleOptions {
