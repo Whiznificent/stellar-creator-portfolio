@@ -31,6 +31,15 @@ export function CreatorCard({ creator }: CreatorCardProps) {
     router.push(`/creators/${creator.id}`);
   };
 
+  const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (!(e.target as HTMLElement).closest('a, button, input')) {
+        router.push(`/creators/${creator.id}`);
+      }
+    }
+  };
+
   const handleCompareToggle = (e: React.MouseEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (isSelected(creator.id)) {
@@ -46,7 +55,11 @@ export function CreatorCard({ creator }: CreatorCardProps) {
   return (
     <div
       onClick={handleCardClick}
-      className="group h-full bg-card border border-border/60 rounded-lg overflow-hidden hover:shadow-xl shadow-sm transition-smooth hover:-translate-y-2 cursor-pointer relative"
+      onKeyDown={handleCardKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`View ${creator.name}'s portfolio`}
+      className="group h-full bg-card border border-border/60 rounded-lg overflow-hidden hover:shadow-xl shadow-sm transition-smooth hover:-translate-y-2 cursor-pointer relative focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
     >
       {/* Compare Checkbox */}
       <div className="absolute top-3 right-3 z-10">
@@ -60,10 +73,11 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                   onChange={handleCompareToggle}
                   disabled={!canAddMore() && !isSelected(creator.id)}
                   className="w-4 h-4 cursor-pointer"
+                  aria-label={`Compare ${creator.name}`}
                 />
                 <span className="text-xs font-semibold text-muted-foreground">
                   {isSelected(creator.id) ? (
-                    <Check size={14} className="text-green-500" />
+                    <Check size={14} className="text-green-500" aria-hidden="true" />
                   ) : (
                     'Compare'
                   )}
