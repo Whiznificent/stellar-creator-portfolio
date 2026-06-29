@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { bounties, formatBudget } from '@/lib/creators-data'
+import { bounties, formatBudget } from '@/lib/services/creators-data'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { BountyMetaRow } from './bounty-meta-client'
@@ -9,6 +9,7 @@ import { MilestoneTrackerClient } from './milestone-tracker-client'
 import { BountyMilestoneProgress } from './bounty-milestone-progress'
 import { Badge } from '@/components/ui/badge'
 import { BountyShareButton } from './bounty-share-client'
+import { BountyRealtimeClient } from './bounty-realtime-client'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
@@ -50,6 +51,7 @@ export default async function BountyDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <BountyRealtimeClient bountyId={bounty.id} />
       <Header />
       <main className="flex-grow container max-w-4xl mx-auto px-4 py-10">
         {/* Header */}
